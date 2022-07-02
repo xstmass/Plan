@@ -21,6 +21,7 @@ import com.djrapitops.plan.delivery.domain.Nickname;
 import com.djrapitops.plan.delivery.rendering.json.graphs.line.Point;
 import com.djrapitops.plan.gathering.domain.*;
 import com.djrapitops.plan.gathering.domain.event.JoinAddress;
+import com.djrapitops.plan.identification.Server;
 import com.djrapitops.plan.identification.ServerUUID;
 import com.djrapitops.plan.storage.database.sql.tables.KillsTable;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -45,6 +46,11 @@ public class RandomData {
 
     public static int randomInt(int rangeStart, int rangeEnd) {
         return ThreadLocalRandom.current().nextInt(rangeStart, rangeEnd);
+    }
+
+    public static int randomNonPrivilegedPort() {
+        return ThreadLocalRandom.current()
+                .nextInt(65535 - 1024) + 1024;
     }
 
     public static long randomTime() {
@@ -99,7 +105,11 @@ public class RandomData {
         return from[randomInt(0, from.length)];
     }
 
-    public static <T> List<T> pickMultiple(int howMany, Supplier<T> supplier) {
+    public static <T> T pickAtRandom(List<T> from) {
+        return from.get(randomInt(0, from.size()));
+    }
+
+    public static <T> List<T> pickMultiple(long howMany, Supplier<T> supplier) {
         List<T> picked = new ArrayList<>();
         for (int i = 0; i < howMany; i++) {
             picked.add(supplier.get());
@@ -112,9 +122,13 @@ public class RandomData {
     }
 
     public static FinishedSession randomSession(ServerUUID serverUUID, String[] worlds, UUID... uuids) {
+        return randomSession(RandomData.randomTime(), serverUUID, worlds, uuids);
+    }
+
+    public static FinishedSession randomSession(long after, ServerUUID serverUUID, String[] worlds, UUID... uuids) {
         DataMap extraData = new DataMap();
         extraData.put(WorldTimes.class, RandomData.randomWorldTimes(worlds));
-        long start = RandomData.randomTime();
+        long start = RandomData.randomTimeAfter(after);
         long end = RandomData.randomTimeAfter(start);
 
         if (uuids.length >= 2) {
@@ -209,5 +223,31 @@ public class RandomData {
         return IntStream.range(0, n).mapToObj(i -> "join_address_" + i)
                 .map(JoinAddress::new)
                 .collect(Collectors.toList());
+    }
+
+    public static Server randomServer(ServerUUID serverUUID) {
+        return new Server(
+                serverUUID,
+                RandomData.randomString(16),
+                "http://localhost",
+                RandomData.randomVersion()
+        );
+    }
+
+    private static String randomVersion() {
+        return RandomData.randomInt(1, 20)
+                + "." +
+                RandomData.randomInt(0, 200)
+                + " build " +
+                RandomData.randomInt(0, 100000);
+    }
+
+    public static BaseUser randomBaseUser(long earliestDate) {
+        return new BaseUser(
+                UUID.randomUUID(),
+                RandomData.randomString(20),
+                RandomData.randomLong(earliestDate, System.currentTimeMillis()),
+                RandomData.randomInt(0, 100)
+        );
     }
 }
