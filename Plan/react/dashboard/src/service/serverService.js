@@ -1,4 +1,5 @@
 import {doGetRequest, staticSite} from "./backendConfiguration";
+import {firstMoments} from "./mockData";
 
 export const fetchServerIdentity = async (timestamp, identifier) => {
     let url = `/v1/serverIdentity?server=${identifier}`;
@@ -307,4 +308,8 @@ const fetchNetworkPlayerJoinAddresses = async (timestamp) => {
     let url = `/v1/joinAddresses`;
     if (staticSite) url = `/data/joinAddresses.json`;
     return doGetRequest(url, timestamp);
+}
+
+export const fetchFirstMoments = async (timestamp, after, before, identifier) => {
+    return firstMoments;
 }
