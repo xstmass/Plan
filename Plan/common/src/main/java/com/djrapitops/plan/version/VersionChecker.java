@@ -114,7 +114,7 @@ public class VersionChecker implements SubSystem {
         if (config.isFalse(PluginSettings.CHECK_FOR_UPDATES)) {
             return;
         }
-        runnableFactory.create(this::checkForUpdates).runTaskAsynchronously();
+//        runnableFactory.create(this::checkForUpdates).runTaskAsynchronously();
     }
 
     @Override

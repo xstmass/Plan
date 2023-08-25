@@ -32,9 +32,7 @@ public class BukkitSensor implements ServerSensor<World> {
     private final boolean hasChunkCountMethod;
 
     @Inject
-    public BukkitSensor(
-            Server server
-    ) {
+    public BukkitSensor(Server server) {
         this.server = server;
         boolean hasPaper = isPaperAvailable();
         hasTPSMethod = hasPaper && hasPaperMethod(Server.class, "getTPS");
@@ -43,12 +41,13 @@ public class BukkitSensor implements ServerSensor<World> {
     }
 
     public static boolean isPaperAvailable() {
-        try {
+        /*try {
             Class.forName("co.aikar.timings.Timing");
             return true;
         } catch (Exception e) {
             return false;
-        }
+        }*/
+        return false;
     }
 
     @Override
